@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "target": "ES6",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "strictNullChecks": true,
+    "baseUrl": "."
+  }
+}
