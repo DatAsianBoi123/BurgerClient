@@ -13,7 +13,10 @@
   },
   "homepage": "https://github.com/DatAsianBoi123/BurgerClient#readme",
   "devDependencies": {
-    "@types/node": "^18.0.6"
+    "@types/node": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "eslint": "^8.20.0"
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.0",

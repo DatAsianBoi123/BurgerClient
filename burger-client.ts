@@ -184,7 +184,8 @@ export class BurgerClient {
           content: 'There was an error executing this command',
         };
 
-        interaction.replied || interaction.deferred ? interaction.editReply(reply) : interaction.reply(reply);
+        if (interaction.replied || interaction.deferred) interaction.editReply(reply);
+        else interaction.reply(reply);
       }
     });
   }
@@ -274,7 +275,8 @@ export class BurgerClient {
 
     for (const command of commands) {
       if (options.logInfo) BurgerClient.logger.log(`Loaded command ${command.data.name}.`);
-      command.type === 'GUILD' ? guildCommands.push(command.data.toJSON()) : globalCommands.push(command.data.toJSON());
+      if (command.type === 'GUILD') guildCommands.push(command.data.toJSON());
+      else globalCommands.push(command.data.toJSON());
     }
 
     await deployGuildCommands(guildCommands);
