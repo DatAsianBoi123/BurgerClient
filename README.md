@@ -14,7 +14,7 @@ Burger Client is a simple command handler for Discord.js
 ## Installation
 
 Burger Client depends on these dependencies:
-- [discord.js](https://npmjs.com/package/discord.js) `^14.0.1`
+- [discord.js](https://npmjs.com/package/discord.js) `^14.0.3`
 - [@discordjs/rest](https://www.npmjs.com/package/@discordjs/rest) `^1.0.0`
 - [mongoose](https://www.npmjs.com/package/mongoose) `^6.4.5`
 
