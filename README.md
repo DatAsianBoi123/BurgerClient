@@ -206,3 +206,5 @@ npm i burgerclient
 [Fork](https://github.com/datasianboi123/burgerclient/fork) this project
 
 Create an [issue](https://github.com/datasianboi123/burgerclient/issues/new)
+
+Create a [pull request](https://github.com/datasianboi123/burgerclient/compare)
