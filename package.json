@@ -1,6 +1,6 @@
 {
   "name": "burgerclient",
-  "version": "1.0.23",
+  "version": "1.0.25",
   "main": "src/out/index.js",
   "types": "src/typings.d.ts",
   "description": "A simple command handler for Discord.js",
@@ -18,7 +18,8 @@
     "@types/node": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
     "@typescript-eslint/parser": "^5.30.7",
-    "eslint": "^8.20.0"
+    "eslint": "^8.20.0",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.0",
