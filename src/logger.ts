@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { LoggerLevels } from 'typings';
+import { LoggerLevels } from './typings';
 
 const customChalk = new chalk.Instance({
   level: 1,

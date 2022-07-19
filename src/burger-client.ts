@@ -1,6 +1,6 @@
 import { ApplicationCommand, Awaitable, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, GuildMember, InteractionReplyOptions, PermissionsBitField } from 'discord.js';
 import { Logger } from './logger';
-import { IClientOptions, ICommand, IDeployCommandsOptions } from 'typings';
+import { IClientOptions, ICommand, IDeployCommandsOptions } from './typings';
 import mongoose from 'mongoose';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
@@ -19,9 +19,10 @@ export class BurgerClient {
   constructor(options: IClientOptions) {
     options.intents ??= [];
     options.partials ??= [];
+    options.logInfo ??= true;
+
     this._client = new Client({ intents: options.intents, partials: options.partials });
 
-    options.logInfo ??= true;
 
     if (options.mongoURI) {
       mongoose.connect(options.mongoURI).then(() => {
@@ -31,6 +32,8 @@ export class BurgerClient {
       }).catch(() => {
         throw new Error('An error occurred when connecting to MongoDB.');
       });
+    } else {
+      this._dbReady = true;
     }
 
     this._options = options;
@@ -49,8 +52,6 @@ export class BurgerClient {
         throw new Error('The bot is not a part of that guild.');
       }
     });
-
-    return this._client;
   }
 
   public onReady(cb: (client: Client<true>) => Awaitable<void>) {
@@ -61,12 +62,12 @@ export class BurgerClient {
     return this._client.on(event, listener);
   }
 
-  public registerAllCommands(dir: string): ICommand[] | null {
+  public async registerAllCommands(dir: string): Promise<ICommand[] | null> {
     const commands: ICommand[] = [];
     let commandFiles: string[];
 
     try {
-      commandFiles = fs.readdirSync(dir).filter(file => file.endsWith('.ts'));
+      commandFiles = fs.readdirSync(dir).filter(file => file.endsWith(this._options.typescript ? '.ts' : '.js'));
     } catch (e) {
       BurgerClient.logger.log('Invalid Directory', 'ERROR');
       return null;
@@ -190,20 +191,16 @@ export class BurgerClient {
     });
   }
 
-  public getClient() {
-    return this._client;
-  }
-
   public getCommands() {
     return this._commands.clone();
   }
 
-  public static allCommandsInDir(dir: string): ICommand[] | null {
+  public static allCommandsInDir(dir: string, typescript: boolean): ICommand[] | null {
     const commands: ICommand[] = [];
     let commandFiles: string[];
 
     try {
-      commandFiles = fs.readdirSync(dir).filter(file => file.endsWith('.ts'));
+      commandFiles = fs.readdirSync(dir).filter(file => file.endsWith(typescript ? '.ts' : '.js'));
     } catch (e) {
       BurgerClient.logger.log('Invalid Directory', 'ERROR');
       return null;
@@ -217,6 +214,11 @@ export class BurgerClient {
       } catch (err) {
         if (!(err instanceof Error)) continue;
         BurgerClient.logger.log(`An error occurred when registering the command in file ${file}: ${err.message}`, 'ERROR');
+        continue;
+      }
+
+      if (command === undefined) {
+        BurgerClient.logger.log(`The command ${file} does not have any exports.`, 'WARNING');
         continue;
       }
 
@@ -285,6 +287,10 @@ export class BurgerClient {
 
   public static isValid(command: ICommand) {
     return !!command?.data && !!command?.type && !!command?.listeners?.onExecute;
+  }
+
+  public get client() {
+    return this._client;
   }
 
   public get user(): ClientUser | null {

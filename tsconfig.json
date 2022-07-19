@@ -4,10 +4,10 @@
     "alwaysStrict": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
-    "target": "ES6",
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
     "strictNullChecks": true,
-    "baseUrl": "."
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "src/out"
   }
 }
