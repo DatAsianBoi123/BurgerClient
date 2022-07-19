@@ -61,7 +61,7 @@ export class BurgerClient {
     return this._client.on(event, listener);
   }
 
-  public async registerAllCommands(dir: string): Promise<ICommand[] | null> {
+  public registerAllCommands(dir: string): ICommand[] | null {
     const commands: ICommand[] = [];
     let commandFiles: string[];
 
