@@ -23,7 +23,6 @@ export class BurgerClient {
 
     this._client = new Client({ intents: options.intents, partials: options.partials });
 
-
     if (options.mongoURI) {
       mongoose.connect(options.mongoURI).then(() => {
         if (options.logInfo) BurgerClient.logger.log('Connected to MongoDB.');

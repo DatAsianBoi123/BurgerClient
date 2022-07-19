@@ -41,7 +41,7 @@ declare class BurgerClient {
    * @param dir Directory to search in
    * @returns All commands in that directory, or null if the directory is invalid
    */
-  public registerAllCommands(dir: string): ICommand[] | null;
+  public registerAllCommands(dir: string): Promise<ICommand[] | null>;
 
   /**
    * Registers one command
