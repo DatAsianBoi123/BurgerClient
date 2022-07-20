@@ -166,11 +166,17 @@ export class BurgerClient {
     const member = interaction.member;
 
     if (!interaction.channel) return interaction.reply('This command is not enabled here');
+    if (interaction.channel.isDMBased() && !(command.permissions?.DMs ?? true)) {
+      BurgerClient.logger.log(`User ${interaction.user.tag} tried to use a command in DMs that isn't allowed there! Updating all permissions...`);
+      await this.updatePermissions();
+      await interaction.reply('This command is not allowed in DMs');
+      return;
+    }
     if (member) {
       if (!(member instanceof GuildMember)) return interaction.reply('Wow! You reached a supposedly unreachable if statement! Please try again later');
 
       if (command.permissions?.default && !member.permissions.has(command.permissions.default)) {
-        BurgerClient.logger.log(`User ${member.user.tag} in guild ${member.guild.id} tried to use a command they weren't supposed to! Updating all permissions...`, 'WARNING');
+        BurgerClient.logger.log(`User ${interaction.user.tag} in guild ${member.guild.id} tried to use a command they weren't supposed to! Updating all permissions...`, 'WARNING');
         await this.updatePermissions();
         await interaction.reply('You do not have permission to use this command');
         return;
