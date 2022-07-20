@@ -67,32 +67,30 @@ class BurgerClient {
     }
     registerAllCommands(dir) {
         var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const commands = [];
-            let commandFiles;
+        const commands = [];
+        let commandFiles;
+        try {
+            commandFiles = fs_1.default.readdirSync(dir).filter(file => file.endsWith(this._options.typescript ? '.ts' : '.js'));
+        }
+        catch (e) {
+            BurgerClient.logger.log('Invalid Directory', 'ERROR');
+            return null;
+        }
+        for (const file of commandFiles) {
+            let command;
             try {
-                commandFiles = fs_1.default.readdirSync(dir).filter(file => file.endsWith(this._options.typescript ? '.ts' : '.js'));
+                command = (_a = require.main) === null || _a === void 0 ? void 0 : _a.require(`${dir}/${file}`);
             }
-            catch (e) {
-                BurgerClient.logger.log('Invalid Directory', 'ERROR');
-                return null;
-            }
-            for (const file of commandFiles) {
-                let command;
-                try {
-                    command = (_a = require.main) === null || _a === void 0 ? void 0 : _a.require(`${dir}/${file}`);
-                }
-                catch (err) {
-                    if (!(err instanceof Error))
-                        continue;
-                    BurgerClient.logger.log(`An error occurred when registering the command in file ${file}: ${err.message}`, 'ERROR');
+            catch (err) {
+                if (!(err instanceof Error))
                     continue;
-                }
-                this.registerCommand(command, file);
-                commands.push(command);
+                BurgerClient.logger.log(`An error occurred when registering the command in file ${file}: ${err.message}`, 'ERROR');
+                continue;
             }
-            return commands;
-        });
+            this.registerCommand(command, file);
+            commands.push(command);
+        }
+        return commands;
     }
     registerCommand(command, displayName) {
         if (!BurgerClient.isValid(command)) {
