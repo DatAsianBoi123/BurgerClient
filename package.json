@@ -1,6 +1,6 @@
 {
   "name": "burgerclient",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "main": "src/out/index.js",
   "types": "src/typings.d.ts",
   "description": "A simple command handler for Discord.js",
