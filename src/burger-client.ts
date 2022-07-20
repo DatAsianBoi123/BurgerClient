@@ -61,7 +61,7 @@ export class BurgerClient {
     return this._client.on(event, listener);
   }
 
-  public registerAllCommands(dir: string): ICommand[] | null {
+  public async registerAllCommands(dir: string): Promise<ICommand[] | null> {
     const commands: ICommand[] = [];
     let commandFiles: string[];
 
@@ -76,7 +76,7 @@ export class BurgerClient {
       let command: ICommand;
 
       try {
-        command = require.main?.require(`${dir}/${file}`);
+        command = require(`${dir}/${file}`);
       } catch (err) {
         if (!(err instanceof Error)) continue;
         BurgerClient.logger.log(`An error occurred when registering the command in file ${file}: ${err.message}`, 'ERROR');
