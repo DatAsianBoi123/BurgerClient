@@ -76,7 +76,7 @@ export class BurgerClient {
       let command: ICommand;
 
       try {
-        command = require(`${dir}/${file}`);
+        command = require.main?.require(`${dir}/${file}`);
       } catch (err) {
         if (!(err instanceof Error)) continue;
         BurgerClient.logger.log(`An error occurred when registering the command in file ${file}: ${err.message}`, 'ERROR');
