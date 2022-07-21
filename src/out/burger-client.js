@@ -66,6 +66,7 @@ class BurgerClient {
         return this._client.on(event, listener);
     }
     registerAllCommands(dir) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const commands = [];
             let commandFiles;
@@ -79,7 +80,7 @@ class BurgerClient {
             for (const file of commandFiles) {
                 let command;
                 try {
-                    command = require(`${dir}/${file}`);
+                    command = (_a = require.main) === null || _a === void 0 ? void 0 : _a.require(`${dir}/${file}`);
                 }
                 catch (err) {
                     if (!(err instanceof Error))
