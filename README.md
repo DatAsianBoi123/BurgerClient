@@ -35,12 +35,12 @@ npm i burgerclient
   const { GatewayIntentsBits } = require('discord.js');
 
   const client = new BurgerClient({
-    typescript: false, // Whether or not your project is made in typescript
+    typescript: false,                    // Whether or not your project is made in typescript
     intents: [GatewayIntentsBits.Guilds], // Put your intents here
-    partials: [], // Put your partials here
-    testGuild: '1234567890', // Test guild ID for commands with the `type: 'GUILD'` property
-    logInfo: true, // Whether or not to log info logs (enabled by default)
-    mongoURI: 'myURIHere', // URI for connecting to MongoDB, if supplied
+    partials: [],                         // Put your partials here
+    testGuild: '1234567890',              // Test guild ID for commands with the `type: 'GUILD'` property
+    logInfo: true,                        // Whether or not to log info logs (enabled by default)
+    mongoURI: 'myURIHere',                // URI for connecting to MongoDB, if supplied
   });
 
   // Listener to when the client is ready and the database has been connected to
@@ -74,9 +74,9 @@ npm i burgerclient
   // Deploys all slash (/) commands using Discord's REST API
   BurgerClient.deployCommands({
     guildId: '1234567890', // Guild ID to deploy guild commands to
-    token: 'myTokenHere', // Your bot's token
-    userId: '9876543210', // Bot's user id. You can obtain this from the Discord Developer Portal
-                          // or you can right-click your bot in discord and click 'Copy ID'
+    token: 'myTokenHere',  // Your bot's token
+    userId: '9876543210',  // Bot's user id. You can obtain this from the Discord Developer Portal
+                           // or you can right-click your bot in discord and click 'Copy ID'
   }, BurgerClient.allCommandsInDir('./commands', /* Using typescript? */ false));
   ```
 </details>
@@ -98,10 +98,11 @@ npm i burgerclient
       .setDescription('Replies with pong!'),
   
     type: 'GUILD', // Command type can be either GUILD or GLOBAL
+    
     // Optional permissions
     permissions: {
       default: 'SendMessages', // Default member permissions (only users with a specific permission can use this command)
-      DMs: true, // Whether or not this command is enabled in DMs (enabled by default)
+      DMs: true,               // Whether or not this command is enabled in DMs (enabled by default)
     },
   
     listeners: {
@@ -109,9 +110,10 @@ npm i burgerclient
       onExecute: async ({ interaction }) => {
         interaction.reply('Pong!');
       },
+      
       // Optional `onError` listener that gets called when an unexpected error gets thrown while executing the command
       onError: ({ error, interaction }) => {
-        interaction.reply(`Uh oh, an error occured! ${error.message}`);
+        interaction.reply(`Uh oh, an error occurred! ${error.message}`);
       },
     },
   };
@@ -127,12 +129,12 @@ npm i burgerclient
   import { GatewayIntentBits } from 'discord.js';
 
   const client = new BurgerClient({
-    typescript: true, // Whether or not your project is made in typescript
+    typescript: true,                     // Whether or not your project is made in typescript
     intents: [GatewayIntentsBits.Guilds], // Put your intents here
-    partials: [], // Put your partials here
-    testGuild: '1234567890', // Test guild ID for commands with the `type: 'GUILD'` property
-    logInfo: true, // Whether or not to log info logs (enabled by default)
-    mongoURI: 'myURIHere', // URI for connecting to MongoDB, if supplied
+    partials: [],                         // Put your partials here
+    testGuild: '1234567890',              // Test guild ID for commands with the `type: 'GUILD'` property
+    logInfo: true,                        // Whether or not to log info logs (enabled by default)
+    mongoURI: 'myURIHere',                // URI for connecting to MongoDB, if supplied
   });
 
   // Listener to when the client is ready and the database has been connected to
@@ -166,9 +168,9 @@ npm i burgerclient
   // Deploys all slash (/) commands using Discord's REST API
   BurgerClient.deployCommands({
     guildId: '1234567890', // Guild ID to deploy guild commands to
-    token: 'myTokenHere', // Your bot's token
-    userId: '9876543210', // Bot's user id. You can obtain this from the Discord Developer Portal
-                          // or you can right-click your bot in discord and click 'Copy ID'
+    token: 'myTokenHere',  // Your bot's token
+    userId: '9876543210',  // Bot's user id. You can obtain this from the Discord Developer Portal
+                           // or you can right-click your bot in discord and click 'Copy ID'
   }, BurgerClient.allCommandsInDir('./commands', /* Using typescript? */ true));
   ```
 </details>
@@ -186,10 +188,11 @@ npm i burgerclient
       .setDescription('Replies with pong!'),
   
     type: 'GUILD', // Command type can be either GUILD or GLOBAL
+    
     // Optional permissions
     permissions: {
       default: 'SendMessages', // Default member permissions (only users with a specific permission can use this command)
-      DMs: true, // Whether or not this command is enabled in DMs (enabled by default)
+      DMs: true,               // Whether or not this command is enabled in DMs (enabled by default)
     },
   
     listeners: {
@@ -197,6 +200,7 @@ npm i burgerclient
       onExecute: async ({ interaction }) => {
         interaction.reply('Pong!');
       },
+      
       // Optional `onError` listener that gets called when an unexpected error gets thrown while executing the command
       onError: ({ error, interaction }) => {
         interaction.reply(`Uh oh, an error occured! ${error.message}`);
