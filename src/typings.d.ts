@@ -1,9 +1,20 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders';
-import { Awaitable, CacheType, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, CommandInteractionOptionResolver, Guild, GuildMember, Partials, PermissionResolvable, TextBasedChannel, User } from 'discord.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Awaitable, CacheType, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, CommandInteractionOptionResolver, GatewayIntentBits, Guild, GuildMember, Partials, PermissionResolvable, TextBasedChannel, User } from 'discord.js';
 
+/**
+ * Main class for interacting with Discord.js and the Discord API
+ */
 declare class BurgerClient {
+  /**
+   * Logger used by BurgerClient
+   */
   public static readonly logger: Logger;
 
+  /**
+   * Creates a new {@link BurgerClient} instance
+   * @param options Client options
+   */
   public constructor(options: IClientOptions);
   private _client: Client;
   private _options: IClientOptions;
@@ -100,61 +111,205 @@ declare class BurgerClient {
   public get user(): ClientUser | null;
 }
 
+/**
+ * Simple logger class BurgerClient uses
+ */
 declare class Logger {
+  /**
+   * Creates a new {@link Logger} instance
+   * @param name The name of the logger
+   */
   constructor(name: string);
 
+  /**
+   * Name of the logger
+   */
   public readonly name: string;
 
+  /**
+   * Logs a message to the console
+   * @param message The message to log
+   * @param level The logger level
+   */
   public log(message: string, level?: LoggerLevels): void;
 }
 
+/**
+ * Callback arguments when a command gets executed
+ */
 interface ICallbackObject {
+  /**
+   * The channel the command was executed in
+   */
   channel: TextBasedChannel;
-  client: Client;
+
+  /**
+   * The logged in Discord client
+   */
+  client: Client<boolean>;
+
+  /**
+   * The guild the command was executed in, or null if it wasn't executed in a guild
+   */
   guild: Guild | null;
+
+  /**
+   * The command arguments
+   */
   args: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>;
+
+  /**
+   * The subcommand used, or null if there are no subcommands
+   */
   subcommand: string | null;
+
+  /**
+   * The command interaction
+   */
   interaction: ChatInputCommandInteraction;
+
+  /**
+   * The user that executed the command
+   */
   user: User;
+
+  /**
+   * The guild member that executed the command, or null if it wasn't executed in a guild
+   */
   member: GuildMember | null;
 }
 
+/**
+ * Callback arguments when an error gets thrown while a command is running
+ */
 interface IErrorObject {
+  /**
+   * The error thrown
+   */
   error: Error;
+
+  /**
+   * The command interaction
+   */
   interaction: ChatInputCommandInteraction;
 }
 
+/**
+ * Command listeners
+ */
 interface IListeners {
+  /**
+   * Creates a callback that gets called when the command is executed
+   * @param obj Callback params
+   */
   onExecute(obj: ICallbackObject): Promise<unknown>;
+
+  /**
+   * Creates a callback that gets called when an unexpected error gets thrown when executing the command
+   * @param obj Error info
+   */
   onError?(obj: IErrorObject): Promise<void>;
 }
 
+/**
+ * Client options when instantiating a new BurgerClient
+ */
 export interface IClientOptions {
+  /**
+   * Client intents
+   * @see {@link GatewayIntentBits}
+   */
   intents?: number[];
+
+  /**
+   * Client partials
+   * @see {@link Partials}
+   */
   partials?: Partials[];
+
+  /**
+   * Test guild ID for guild commands
+   */
   testGuild: string;
+
+  /**
+   * Url to use when connecting to MongoDB
+   */
   mongoURI?: string;
+
+  /**
+   * Whether or not to log info logs
+   */
   logInfo?: boolean;
+
+  /**
+   * Whether or not this project is in typescript
+   */
   typescript: boolean;
 }
 
+/**
+ * Options to use when deploying commands
+ */
 export interface IDeployCommandsOptions {
+  /**
+   * Token to use when deploying commands
+   */
   token: string;
+
+  /**
+   * Guild ID to use when deploying guild commands
+   */
   guildId: string;
+
+  /**
+   * Bot's user ID
+   *
+   * This can be found in the developer portal
+   */
   userId: string;
-  mongoURI?: string;
+
+  /**
+   * Whether or not to log info logs
+   */
   logInfo?: boolean;
 }
 
+/**
+ * Data for slash commands
+ */
 export interface ICommand {
+  /**
+   * The command's data
+   * @see {@link https://discord.js.org/#/docs/builders/main/class/SlashCommandBuilder docs} for more info
+   */
   data: SlashCommandBuilder | SlashCommandSubcommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandsOnlyBuilder;
+
+  /**
+   * Whether or not to skip this command when registering
+   */
   skip?: boolean;
+
+  /**
+   * Command permissions
+   */
   permissions?: {
     default?: PermissionResolvable;
     DMs?: boolean;
   };
+
+  /**
+   * Command type
+   */
   type: 'GUILD' | 'GLOBAL';
+
+  /**
+   * Command listeners
+   */
   listeners: IListeners;
 }
 
+/**
+ * Different log levels used by the {@link Logger}
+ */
 export type LoggerLevels = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
