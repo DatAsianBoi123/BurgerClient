@@ -1,4 +1,4 @@
-import { ApplicationCommand, Awaitable, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, GuildMember, InteractionReplyOptions, PermissionsBitField } from 'discord.js';
+import { ApplicationCommand, Awaitable, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, InteractionReplyOptions, PermissionsBitField } from 'discord.js';
 import { Logger } from './logger';
 import { IClientOptions, ICommand, IDeployCommandsOptions } from './typings';
 import mongoose from 'mongoose';
@@ -46,11 +46,9 @@ export class BurgerClient {
   public async login(token: string) {
     await this._client.login(token);
 
-    this._client.guilds.fetch().then(() => {
-      if (!this._client.guilds.cache.has(this._options.testGuild)) {
-        throw new Error('The bot is not a part of that guild.');
-      }
-    });
+    if (!this._client.guilds.resolve(this._options.testGuild)) {
+      throw new Error('The bot is not a part of that guild.');
+    }
   }
 
   public onReady(cb: (client: Client<true>) => Awaitable<void>) {
@@ -155,6 +153,12 @@ export class BurgerClient {
   }
 
   public async resolveCommand(interaction: ChatInputCommandInteraction) {
+    if (!interaction.inCachedGuild()) {
+      BurgerClient.logger.log(`The guild ${interaction.guildId} was not cached!`, 'WARNING');
+      await interaction.reply('An unexpected error occurred, please try again later');
+      return;
+    }
+
     const command = this._commands.get(interaction.commandName);
 
     if (!command) {
@@ -173,8 +177,6 @@ export class BurgerClient {
       return;
     }
     if (member) {
-      if (!(member instanceof GuildMember)) return interaction.reply('Wow! You reached a supposedly unreachable if statement! Please try again later');
-
       if (command.permissions?.default && !member.permissions.has(command.permissions.default)) {
         BurgerClient.logger.log(`User ${interaction.user.tag} in guild ${member.guild.id} tried to use a command they weren't supposed to! Updating all permissions...`, 'WARNING');
         await this.updatePermissions();
@@ -245,17 +247,6 @@ export class BurgerClient {
 
   public static async deployCommands(options: IDeployCommandsOptions, commands: ICommand[]) {
     options.logInfo ??= true;
-
-    if (options.mongoURI) {
-      if (mongoose.connection.readyState !== 1) {
-        await mongoose.connect(options.mongoURI).then(() => {
-          if (options.logInfo) this.logger.log('Connected to MongoDB.');
-        }).catch(() => {
-          this.logger.log('An error occurred when connecting to MongoDB.', 'ERROR');
-          return;
-        });
-      }
-    }
 
     const rest = new REST({ version: '10' }).setToken(options.token);
 
