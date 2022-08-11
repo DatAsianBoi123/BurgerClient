@@ -4,6 +4,10 @@
   "main": "src/out/index.js",
   "types": "src/typings.d.ts",
   "description": "A simple command handler for Discord.js",
+  "scripts": {
+    "test": "ts-node index.test.ts",
+    "prepublish": "tsc"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DatAsianBoi123/BurgerClient.git"
@@ -21,6 +25,7 @@
     "@typescript-eslint/parser": "^5.30.7",
     "discord-api-types": "^0.36.2",
     "discord.js": "^14.0.3",
+    "dotenv": "^16.0.1",
     "eslint": "^8.20.0",
     "mongoose": "^6.4.5",
     "typescript": "^4.7.4"

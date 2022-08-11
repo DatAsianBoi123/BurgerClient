@@ -9,5 +9,6 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "outDir": "src/out"
-  }
+  },
+  "exclude": ["./index.test.ts"]
 }
