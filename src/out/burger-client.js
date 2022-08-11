@@ -52,11 +52,9 @@ class BurgerClient {
     login(token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._client.login(token);
-            this._client.guilds.fetch().then(() => {
-                if (!this._client.guilds.cache.has(this._options.testGuild)) {
-                    throw new Error('The bot is not a part of that guild.');
-                }
-            });
+            if (!this._client.guilds.resolve(this._options.testGuild)) {
+                throw new Error('The bot is not a part of that guild.');
+            }
         });
     }
     onReady(cb) {
@@ -108,6 +106,27 @@ class BurgerClient {
         if (this._options.logInfo)
             BurgerClient.logger.log(`Registered command ${displayName}.`);
         this._commands.set(command.data.name, command);
+    }
+    updateCommands() {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._options.logInfo)
+                BurgerClient.logger.log('Updating application commands...');
+            const globalCommands = this._commands.filter(command => command.type === 'GLOBAL');
+            const guildCommands = this._commands.filter(command => command.type === 'GUILD');
+            yield ((_a = this._client.guilds.cache.get(this._options.testGuild)) === null || _a === void 0 ? void 0 : _a.commands.set(guildCommands.map(command => command.data.toJSON())).then(() => {
+                if (this._options.logInfo)
+                    BurgerClient.logger.log(`Successfully updated ${guildCommands.size} guild commands.`);
+            }).catch(error => {
+                BurgerClient.logger.log(`An error ocurred when updating guild commands: ${error.message}`, 'ERROR');
+            }));
+            yield ((_b = this._client.application) === null || _b === void 0 ? void 0 : _b.commands.set(globalCommands.map(command => command.data.toJSON())).then(() => {
+                if (this._options.logInfo)
+                    BurgerClient.logger.log(`Successfully updated ${globalCommands.size} global commands.`);
+            }).catch(error => {
+                BurgerClient.logger.log(`An error ocurred when updating global commands: ${error.message}`, 'ERROR');
+            }));
+        });
     }
     updatePermissions() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -166,6 +185,11 @@ class BurgerClient {
     resolveCommand(interaction) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
+            if (!interaction.inCachedGuild()) {
+                BurgerClient.logger.log(`The guild ${interaction.guildId} was not cached!`, 'WARNING');
+                yield interaction.reply('An unexpected error occurred, please try again later');
+                return;
+            }
             const command = this._commands.get(interaction.commandName);
             if (!command) {
                 BurgerClient.logger.log(`The command ${interaction.commandName} was not registered.`, 'WARNING');
@@ -182,8 +206,6 @@ class BurgerClient {
                 return;
             }
             if (member) {
-                if (!(member instanceof discord_js_1.GuildMember))
-                    return interaction.reply('Wow! You reached a supposedly unreachable if statement! Please try again later');
                 if (((_c = command.permissions) === null || _c === void 0 ? void 0 : _c.default) && !member.permissions.has(command.permissions.default)) {
                     BurgerClient.logger.log(`User ${interaction.user.tag} in guild ${member.guild.id} tried to use a command they weren't supposed to! Updating all permissions...`, 'WARNING');
                     yield this.updatePermissions();
@@ -251,35 +273,26 @@ class BurgerClient {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             (_a = options.logInfo) !== null && _a !== void 0 ? _a : (options.logInfo = true);
-            if (options.mongoURI) {
-                if (mongoose_1.default.connection.readyState !== 1) {
-                    yield mongoose_1.default.connect(options.mongoURI).then(() => {
-                        if (options.logInfo)
-                            this.logger.log('Connected to MongoDB.');
-                    }).catch(() => {
-                        this.logger.log('An error occurred when connecting to MongoDB.', 'ERROR');
-                        return;
-                    });
-                }
-            }
             const rest = new rest_1.REST({ version: '10' }).setToken(options.token);
             const deployGuildCommands = (guildCommands) => __awaiter(this, void 0, void 0, function* () {
                 yield rest.put(v10_1.Routes.applicationGuildCommands(options.userId, options.guildId), { body: guildCommands })
+                    .then(() => {
+                    if (options.logInfo)
+                        BurgerClient.logger.log(`Successfully registered ${guildCommands.length} guild commands.`);
+                })
                     .catch(err => {
                     BurgerClient.logger.log(`An error occurred when deploying guild commands: ${err.message}`, 'ERROR');
-                    return;
                 });
-                if (options.logInfo)
-                    BurgerClient.logger.log(`Successfully registered ${guildCommands.length} guild commands.`);
             });
             const deployGlobalCommands = (globalCommands) => __awaiter(this, void 0, void 0, function* () {
                 yield rest.put(v10_1.Routes.applicationCommands(options.userId), { body: globalCommands })
+                    .then(() => {
+                    if (options.logInfo)
+                        BurgerClient.logger.log(`Successfully registered ${globalCommands.length} global commands.`);
+                })
                     .catch(() => {
                     BurgerClient.logger.log('An error occurred when deploying global commands.', 'ERROR');
-                    return;
                 });
-                if (options.logInfo)
-                    BurgerClient.logger.log(`Successfully registered ${globalCommands.length} global commands.`);
             });
             const guildCommands = [];
             const globalCommands = [];
