@@ -13,6 +13,8 @@ Burger Client is a simple command handler for Discord.js
 
 ## Installation
 
+**[Node.js](https://nodejs.dev) 16.9.0 or newer is requried.**
+
 Burger Client depends on these dependencies:
 - [discord.js](https://npmjs.com/package/discord.js) `^14.0.3`
 - [@discordjs/rest](https://www.npmjs.com/package/@discordjs/rest) `^1.0.0`
