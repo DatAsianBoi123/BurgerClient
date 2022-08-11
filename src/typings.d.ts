@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders';
+import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder } from '@discordjs/builders';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Awaitable, CacheType, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, CommandInteractionOptionResolver, GatewayIntentBits, Guild, GuildMember, Partials, PermissionResolvable, TextBasedChannel, User } from 'discord.js';
 
@@ -62,7 +62,12 @@ declare class BurgerClient {
   public registerCommand(command: ICommand, displayName: string): void;
 
   /**
-   * Updates all registered command permissions
+   * Updates all application commands
+   */
+  public updateCommands(): Promise<void>;
+
+  /**
+   * Updates all command permissions
    */
   public updatePermissions(): Promise<void>;
 
@@ -85,12 +90,15 @@ declare class BurgerClient {
    * @returns The commands in that directory, or null if the directory is invalid
    */
   public static allCommandsInDir(dir: string, typescript: boolean): ICommand[] | null;
+
   /**
    * Deploys all commands to Discord using the REST API
+   * @deprecated Use {@link updateCommands()|updateCommands} instead
    * @param options Deploy command options
    * @param commands Commands to deploy
    */
   public static deployCommands(options: IDeployCommandsOptions, commands: ICommand[]): Promise<void>;
+
   /**
    * Checks whether or not a command is valid
    * @param command The command to check
@@ -283,7 +291,7 @@ export interface ICommand {
    * The command's data
    * @see {@link https://discord.js.org/#/docs/builders/main/class/SlashCommandBuilder docs} for more info
    */
-  data: SlashCommandBuilder | SlashCommandSubcommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandGroupBuilder | SlashCommandSubcommandsOnlyBuilder;
+  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
 
   /**
    * Whether or not to skip this command when registering

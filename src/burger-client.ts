@@ -103,6 +103,26 @@ export class BurgerClient {
     this._commands.set(command.data.name, command);
   }
 
+  public async updateCommands() {
+    if (this._options.logInfo) BurgerClient.logger.log('Updating application commands...');
+    const globalCommands = this._commands.filter(command => command.type === 'GLOBAL');
+    const guildCommands = this._commands.filter(command => command.type === 'GUILD');
+
+    await this._client.guilds.cache.get(this._options.testGuild)?.commands.set(guildCommands.map(command => command.data.toJSON()))
+      .then(() => {
+        if (this._options.logInfo) BurgerClient.logger.log(`Successfully updated ${guildCommands.size} guild commands.`);
+      })
+      .catch(error => {
+        BurgerClient.logger.log(`An error ocurred when updating guild commands: ${error.message}`, 'ERROR');
+      });
+
+    await this._client.application?.commands.set(globalCommands.map(command => command.data.toJSON())).then(() => {
+      if (this._options.logInfo) BurgerClient.logger.log(`Successfully updated ${globalCommands.size} global commands.`);
+    }).catch(error => {
+      BurgerClient.logger.log(`An error ocurred when updating global commands: ${error.message}`, 'ERROR');
+    });
+  }
+
   public async updatePermissions() {
     const updatePermissionsFor = async (commands: Collection<string, ApplicationCommand>, filteredCommands: Collection<string, ICommand>) => {
       for (const [name] of filteredCommands) {
@@ -252,20 +272,22 @@ export class BurgerClient {
 
     const deployGuildCommands = async (guildCommands: unknown[]) => {
       await rest.put(Routes.applicationGuildCommands(options.userId, options.guildId), { body: guildCommands })
+        .then(() => {
+          if (options.logInfo) BurgerClient.logger.log(`Successfully registered ${guildCommands.length} guild commands.`);
+        })
         .catch(err => {
           BurgerClient.logger.log(`An error occurred when deploying guild commands: ${err.message}`, 'ERROR');
-          return;
         });
-      if (options.logInfo) BurgerClient.logger.log(`Successfully registered ${guildCommands.length} guild commands.`);
     };
 
     const deployGlobalCommands = async (globalCommands: unknown[]) => {
       await rest.put(Routes.applicationCommands(options.userId), { body: globalCommands })
+        .then(() => {
+          if (options.logInfo) BurgerClient.logger.log(`Successfully registered ${globalCommands.length} global commands.`);
+        })
         .catch(() => {
           BurgerClient.logger.log('An error occurred when deploying global commands.', 'ERROR');
-          return;
         });
-      if (options.logInfo) BurgerClient.logger.log(`Successfully registered ${globalCommands.length} global commands.`);
     };
 
     const guildCommands = [];
