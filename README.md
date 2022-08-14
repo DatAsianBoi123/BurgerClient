@@ -35,6 +35,7 @@ npm i burgerclient
   ```javascript
   const { BurgerClient } = require('burgerclient');
   const { GatewayIntentsBits } = require('discord.js');
+  const path = require('path');
 
   const client = new BurgerClient({
     typescript: false,                    // Whether or not your project is made in typescript
@@ -47,10 +48,11 @@ npm i burgerclient
 
   // Listener to when the client is ready and the database has been connected to
   client.onReady(async discordClient => {
-    client.registerAllCommands('./commands'); // Registers all commands in a given directory
+    client.registerAllCommands(path.resolve('commands')); // Registers all commands in the directory ./commands
     // Instead of registering all commands in a directory, you can also register a specific command in a file
     // client.registerCommand(require('./commands/ping'), 'ping');
 
+    await client.updateCommands();    // Updates all application commands
     await client.updatePermissions(); // Updates all application command permissions
 
     console.log(`Ready! Logged in as ${discordClient.user.tag}`);
@@ -68,27 +70,11 @@ npm i burgerclient
 </details>
 
 <details>
-  <summary>reloadcommands.js</summary>
-  
-  ```javascript
-  const { BurgerClient } = require('burgerclient');
-  
-  // Deploys all slash (/) commands using Discord's REST API
-  BurgerClient.deployCommands({
-    guildId: '1234567890', // Guild ID to deploy guild commands to
-    token: 'myTokenHere',  // Your bot's token
-    userId: '9876543210',  // Bot's user id. You can obtain this from the Discord Developer Portal
-                           // or you can right-click your bot in discord and click 'Copy ID'
-  }, BurgerClient.allCommandsInDir('./commands', /* Using typescript? */ false));
-  ```
-</details>
-
-<details>
   <summary>commands/ping.js</summary>
   
   ```javascript
   const { ICommand } = require('burgerclient');
-  const { SlashCommandBuilder } require('discord.js');
+  const { SlashCommandBuilder } = require('discord.js');
   
   // For intellisense and auto-completions
   /**
@@ -141,10 +127,11 @@ npm i burgerclient
 
   // Listener to when the client is ready and the database has been connected to
   client.onReady(async discordClient => {
-    client.registerAllCommands('./commands'); // Registers all commands in a given directory
+    client.registerAllCommands(path.resolve('commands')); // Registers all commands in a given directory
     // Instead of registering all commands in a directory, you can also register a specific command in a file
     // client.registerCommand(require('./commands/ping'), 'ping');
 
+    await client.updateCommands();    // Updates all application commands
     await client.updatePermissions(); // Updates all application command permissions
 
     console.log(`Ready! Logged in as ${discordClient.user.tag}`);
@@ -158,22 +145,6 @@ npm i burgerclient
   });
 
   client.login('myTokenHere'); // Logins to Discord using your bot's token
-  ```
-</details>
-
-<details>
-  <summary>reloadcommands.ts</summary>
-  
-  ```typescript
-  import { BurgerClient } from 'burgerclient';
-  
-  // Deploys all slash (/) commands using Discord's REST API
-  BurgerClient.deployCommands({
-    guildId: '1234567890', // Guild ID to deploy guild commands to
-    token: 'myTokenHere',  // Your bot's token
-    userId: '9876543210',  // Bot's user id. You can obtain this from the Discord Developer Portal
-                           // or you can right-click your bot in discord and click 'Copy ID'
-  }, BurgerClient.allCommandsInDir('./commands', /* Using typescript? */ true));
   ```
 </details>
 
