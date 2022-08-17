@@ -185,27 +185,31 @@ class BurgerClient {
     resolveCommand(interaction) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
-            if (!interaction.inCachedGuild()) {
-                BurgerClient.logger.log(`The guild ${interaction.guildId} was not cached!`, 'WARNING');
-                yield interaction.reply('An unexpected error occurred, please try again later');
-                return;
-            }
             const command = this._commands.get(interaction.commandName);
             if (!command) {
                 BurgerClient.logger.log(`The command ${interaction.commandName} was not registered.`, 'WARNING');
                 interaction.reply('This command is not registered, please report this!');
                 return;
             }
-            const member = interaction.member;
-            if (!interaction.channel)
-                return interaction.reply('This command is not enabled here');
+            if (!interaction.channel) {
+                BurgerClient.logger.log(`The command ${interaction.commandName} was sent in a null channel. Did you forget to add the \`Channels\` partial?`, 'WARNING');
+                yield interaction.reply('This command is not enabled here');
+                return;
+            }
             if (interaction.channel.isDMBased() && !((_b = (_a = command.permissions) === null || _a === void 0 ? void 0 : _a.DMs) !== null && _b !== void 0 ? _b : true)) {
                 BurgerClient.logger.log(`User ${interaction.user.tag} tried to use a command in DMs that isn't allowed there! Updating all permissions...`);
                 yield this.updatePermissions();
                 yield interaction.reply('This command is not allowed in DMs');
                 return;
             }
-            if (member) {
+            let member = null;
+            if (interaction.inGuild()) {
+                if (!interaction.inCachedGuild()) {
+                    BurgerClient.logger.log(`The guild ${interaction.guildId} was not cached!`, 'WARNING');
+                    yield interaction.reply('An unexpected error occurred, please try again later');
+                    return;
+                }
+                member = interaction.member;
                 if (((_c = command.permissions) === null || _c === void 0 ? void 0 : _c.default) && !member.permissions.has(command.permissions.default)) {
                     BurgerClient.logger.log(`User ${interaction.user.tag} in guild ${member.guild.id} tried to use a command they weren't supposed to! Updating all permissions...`, 'WARNING');
                     yield this.updatePermissions();
