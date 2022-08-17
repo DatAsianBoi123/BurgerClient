@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import fs from 'fs';
+import path from 'path';
 
 export class BurgerClient {
   public static readonly logger = new Logger('Burger Client');
@@ -59,7 +60,7 @@ export class BurgerClient {
     return this._client.on(event, listener);
   }
 
-  public async registerAllCommands(dir: string): Promise<ICommand[] | null> {
+  public async registerAllCommands(dir: string) {
     const commands: ICommand[] = [];
     let commandFiles: string[];
 
@@ -74,7 +75,7 @@ export class BurgerClient {
       let command: ICommand;
 
       try {
-        command = require.main?.require(`${dir}/${file}`);
+        command = (await import(path.resolve(dir, file))).default;
       } catch (err) {
         if (!(err instanceof Error)) continue;
         BurgerClient.logger.log(`An error occurred when registering the command in file ${file}: ${err.message}`, 'ERROR');
