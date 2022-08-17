@@ -1,4 +1,4 @@
-import { ApplicationCommand, Awaitable, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, InteractionReplyOptions, PermissionsBitField } from 'discord.js';
+import { ApplicationCommand, Awaitable, ChatInputCommandInteraction, Client, ClientEvents, ClientUser, Collection, GuildMember, InteractionReplyOptions, PermissionsBitField } from 'discord.js';
 import { Logger } from './logger';
 import { IClientOptions, ICommand, IDeployCommandsOptions } from './typings';
 import mongoose from 'mongoose';
@@ -173,12 +173,6 @@ export class BurgerClient {
   }
 
   public async resolveCommand(interaction: ChatInputCommandInteraction) {
-    if (!interaction.inCachedGuild()) {
-      BurgerClient.logger.log(`The guild ${interaction.guildId} was not cached!`, 'WARNING');
-      await interaction.reply('An unexpected error occurred, please try again later');
-      return;
-    }
-
     const command = this._commands.get(interaction.commandName);
 
     if (!command) {
@@ -187,16 +181,29 @@ export class BurgerClient {
       return;
     }
 
-    const member = interaction.member;
-
-    if (!interaction.channel) return interaction.reply('This command is not enabled here');
+    if (!interaction.channel) {
+      BurgerClient.logger.log(`The command ${interaction.commandName} was sent in a null channel. Did you forget to add the \`Channels\` partial?`, 'WARNING');
+      await interaction.reply('This command is not enabled here');
+      return;
+    }
     if (interaction.channel.isDMBased() && !(command.permissions?.DMs ?? true)) {
       BurgerClient.logger.log(`User ${interaction.user.tag} tried to use a command in DMs that isn't allowed there! Updating all permissions...`);
       await this.updatePermissions();
       await interaction.reply('This command is not allowed in DMs');
       return;
     }
-    if (member) {
+
+    let member: GuildMember | null = null;
+
+    if (interaction.inGuild()) {
+      if (!interaction.inCachedGuild()) {
+        BurgerClient.logger.log(`The guild ${interaction.guildId} was not cached!`, 'WARNING');
+        await interaction.reply('An unexpected error occurred, please try again later');
+        return;
+      }
+
+      member = interaction.member;
+
       if (command.permissions?.default && !member.permissions.has(command.permissions.default)) {
         BurgerClient.logger.log(`User ${interaction.user.tag} in guild ${member.guild.id} tried to use a command they weren't supposed to! Updating all permissions...`, 'WARNING');
         await this.updatePermissions();
