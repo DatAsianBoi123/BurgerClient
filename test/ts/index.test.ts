@@ -1,6 +1,7 @@
-import { BurgerClient } from './src/index';
+import { BurgerClient } from '../../src/index';
 import 'dotenv/config';
-import { GatewayIntentBits, Partials, SlashCommandBuilder } from 'discord.js';
+import { GatewayIntentBits, Partials } from 'discord.js';
+import path from 'path';
 
 const burgerClient = new BurgerClient({
   testGuild: process.env.guild ?? '',
@@ -10,20 +11,7 @@ const burgerClient = new BurgerClient({
 });
 
 burgerClient.onReady(async client => {
-  burgerClient.registerCommand({
-    data: new SlashCommandBuilder()
-      .setName('bee')
-      .setDescription('bee'),
-
-    type: 'GLOBAL',
-
-    listeners: {
-      onExecute: async ({ interaction }) => {
-        await interaction.reply(':bee:');
-      },
-    },
-  }, 'bee');
-
+  await burgerClient.registerAllCommands(path.resolve('test', 'ts', 'commands'));
   await burgerClient.updateCommands();
   await burgerClient.updatePermissions();
 

@@ -1,11 +1,12 @@
 {
   "name": "burgerclient",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "main": "src/out/index.js",
   "types": "src/typings.d.ts",
   "description": "A simple command handler for Discord.js",
   "scripts": {
-    "test": "ts-node index.test.ts",
+    "test-ts": "ts-node test/ts/index.test.ts",
+    "test-js": "node test/js/index.test.js",
     "prepublish": "tsc"
   },
   "repository": {
