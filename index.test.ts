@@ -1,11 +1,12 @@
 import { BurgerClient } from './src/index';
 import 'dotenv/config';
-import { GatewayIntentBits, SlashCommandBuilder } from 'discord.js';
+import { GatewayIntentBits, Partials, SlashCommandBuilder } from 'discord.js';
 
 const burgerClient = new BurgerClient({
   testGuild: process.env.guild ?? '',
   typescript: true,
   intents: [GatewayIntentBits.Guilds],
+  partials: [Partials.Channel],
 });
 
 burgerClient.onReady(async client => {
@@ -14,11 +15,11 @@ burgerClient.onReady(async client => {
       .setName('bee')
       .setDescription('bee'),
 
-    type: 'GUILD',
+    type: 'GLOBAL',
 
     listeners: {
       onExecute: async ({ interaction }) => {
-        interaction.reply(':bee:');
+        await interaction.reply(':bee:');
       },
     },
   }, 'bee');
