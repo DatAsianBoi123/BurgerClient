@@ -48,10 +48,7 @@ npm i burgerclient
 
   // Listener to when the client is ready and the database has been connected to
   client.onReady(async discordClient => {
-    client.registerAllCommands(path.resolve('commands')); // Registers all commands in the directory ./commands
-    // Instead of registering all commands in a directory, you can also register a specific command in a file
-    // client.registerCommand(require('./commands/ping'), 'ping');
-
+    await client.registerAllCommands(path.resolve('commands')); // Registers all commands in the directory ./commands
     await client.updateCommands();    // Updates all application commands
     await client.updatePermissions(); // Updates all application command permissions
 
@@ -127,10 +124,7 @@ npm i burgerclient
 
   // Listener to when the client is ready and the database has been connected to
   client.onReady(async discordClient => {
-    client.registerAllCommands(path.resolve('commands')); // Registers all commands in a given directory
-    // Instead of registering all commands in a directory, you can also register a specific command in a file
-    // client.registerCommand(require('./commands/ping'), 'ping');
-
+    await client.registerAllCommands(path.resolve('commands')); // Registers all commands in a given directory
     await client.updateCommands();    // Updates all application commands
     await client.updatePermissions(); // Updates all application command permissions
 
